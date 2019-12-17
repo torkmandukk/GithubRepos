@@ -1,0 +1,25 @@
+apply from: './versionsPlugin.gradle'
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath Dependencies.gradle
+        classpath Dependencies.kotlin_plugin
+        classpath Dependencies.benManes
+        classpath Dependencies.spotless
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

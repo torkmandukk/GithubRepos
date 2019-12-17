@@ -1,0 +1,97 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion Versions.compileSdk
+    defaultConfig {
+        applicationId "com.torkmandukk.githubrepos"
+        minSdkVersion Versions.minSdk
+        targetSdkVersion Versions.targetSdk
+        versionCode Versions.versionCode
+        versionName Versions.versionName
+        testInstrumentationRunner "com.torkmandukk.githubrepos.util.JunitTestRunner"
+        multiDexEnabled true
+    }
+    lintOptions {
+        disable 'RestrictedApi'
+    }
+    kapt {
+        correctErrorTypes = true
+    }
+    dataBinding {
+        enabled = true
+    }
+    androidExtensions {
+        experimental = true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    sourceSets {
+        androidTest.java.srcDirs += "src/test-common/java"
+        test.java.srcDirs += "src/test-common/java"
+    }
+}
+
+dependencies {
+    implementation Dependencies.support_appcompat
+    implementation Dependencies.support_design
+    implementation Dependencies.support_cardview
+    implementation Dependencies.support_recyclerview
+
+    implementation Dependencies.kotlin_stdlib
+    implementation Dependencies.anko
+
+    implementation Dependencies.arch_lifecycle
+    implementation Dependencies.livedata_ktx
+    implementation Dependencies.arch_room
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    kapt Dependencies.arch_room_compiler
+    testImplementation Dependencies.arch_core_testing
+    testImplementation Dependencies.mockWebServer
+
+    implementation Dependencies.dagger
+    kapt Dependencies.dagger_compiler
+
+    implementation Dependencies.dagger_android
+    implementation Dependencies.dagger_android_support
+    kapt Dependencies.dagger_android_compiler
+
+    implementation Dependencies.rxjava
+    implementation Dependencies.rxandroid
+
+    implementation Dependencies.preferenceroom
+    kapt Dependencies.preferenceroom_compiler
+
+    implementation Dependencies.gson
+
+    implementation Dependencies.retrofit
+    implementation Dependencies.retrofit_gson
+
+    implementation Dependencies.timber
+    debugImplementation Dependencies.memoryLeakDebug
+
+    implementation Dependencies.stetho
+    implementation Dependencies.stetho_okhttp
+
+    implementation Dependencies.glide
+    kapt Dependencies.glide_compiler
+
+    implementation Dependencies.powermenu
+    implementation Dependencies.androidsvg
+    implementation Dependencies.baseadapter
+    implementation Dependencies.androidveil
+
+    implementation Dependencies.multiDex
+
+    testImplementation Dependencies.junit
+    testImplementation Dependencies.mockito
+    testImplementation Dependencies.mockitoKotlin
+    androidTestImplementation Dependencies.mockitoAndroid
+    androidTestImplementation Dependencies.espresso
+}
+
+apply from: '../spotless.gradle'
