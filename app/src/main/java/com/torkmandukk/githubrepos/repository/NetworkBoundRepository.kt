@@ -13,71 +13,71 @@ import timber.log.Timber
 abstract class NetworkBoundRepository<ResultType, RequestType>
 internal constructor() {
 
-  private val result: MediatorLiveData<Resource<ResultType>> = MediatorLiveData()
+    private val result: MediatorLiveData<Resource<ResultType>> = MediatorLiveData()
 
-  init {
-    Timber.d("Injection NetworkBoundRepository")
-    val loadedFromDB = loadFromDb()
-    result.addSource(loadedFromDB) { data ->
-      result.removeSource(loadedFromDB)
-      if (shouldFetch(data)) {
-        result.postValue(Resource.loading(null, null))
-        fetchFromNetwork(loadedFromDB)
-      } else {
-        result.addSource<ResultType>(loadedFromDB) { newData -> setValue(Resource.success(newData, 1)) }
-      }
-    }
-  }
-
-  private fun fetchFromNetwork(loadedFromDB: LiveData<ResultType>) {
-    val apiResponse = fetchService()
-    result.addSource(apiResponse) { response ->
-      response?.let {
-        when (response.isSuccessful) {
-          true -> {
-            response.body?.let {
-              saveFetchData(it)
-              val loaded = loadFromDb()
-              result.addSource(loaded) { newData ->
-                newData?.let {
-                  setValue(Resource.success(newData, response.nextPage))
-                }
-              }
-            }
-          }
-          false -> {
+    init {
+        Timber.d("Injection NetworkBoundRepository")
+        val loadedFromDB = loadFromDb()
+        result.addSource(loadedFromDB) { data ->
             result.removeSource(loadedFromDB)
-            onFetchFailed(response.envelope)
-            response.envelope?.let {
-              result.addSource<ResultType>(loadedFromDB) { newData -> setValue(Resource.error(it.message, newData)) }
+            if (shouldFetch(data)) {
+                result.postValue(Resource.loading(null, null))
+                fetchFromNetwork(loadedFromDB)
+            } else {
+                result.addSource<ResultType>(loadedFromDB) { newData -> setValue(Resource.success(newData, 1)) }
             }
-          }
         }
-      }
     }
-  }
 
-  @MainThread
-  private fun setValue(newValue: Resource<ResultType>) {
-    result.value = newValue
-  }
+    private fun fetchFromNetwork(loadedFromDB: LiveData<ResultType>) {
+        val apiResponse = fetchService()
+        result.addSource(apiResponse) { response ->
+            response?.let {
+                when (response.isSuccessful) {
+                    true -> {
+                        response.body?.let {
+                            saveFetchData(it)
+                            val loaded = loadFromDb()
+                            result.addSource(loaded) { newData ->
+                                newData?.let {
+                                    setValue(Resource.success(newData, response.nextPage))
+                                }
+                            }
+                        }
+                    }
+                    false -> {
+                        result.removeSource(loadedFromDB)
+                        onFetchFailed(response.envelope)
+                        response.envelope?.let {
+                            result.addSource<ResultType>(loadedFromDB) { newData -> setValue(Resource.error(it.message, newData)) }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-  fun asLiveData(): LiveData<Resource<ResultType>> {
-    return result
-  }
+    @MainThread
+    private fun setValue(newValue: Resource<ResultType>) {
+        result.value = newValue
+    }
 
-  @WorkerThread
-  protected abstract fun saveFetchData(items: RequestType)
+    fun asLiveData(): LiveData<Resource<ResultType>> {
+        return result
+    }
 
-  @MainThread
-  protected abstract fun shouldFetch(data: ResultType?): Boolean
+    @WorkerThread
+    protected abstract fun saveFetchData(items: RequestType)
 
-  @MainThread
-  protected abstract fun loadFromDb(): LiveData<ResultType>
+    @MainThread
+    protected abstract fun shouldFetch(data: ResultType?): Boolean
 
-  @MainThread
-  protected abstract fun fetchService(): LiveData<ApiResponse<RequestType>>
+    @MainThread
+    protected abstract fun loadFromDb(): LiveData<ResultType>
 
-  @MainThread
-  protected abstract fun onFetchFailed(envelope: Envelope?)
+    @MainThread
+    protected abstract fun fetchService(): LiveData<ApiResponse<RequestType>>
+
+    @MainThread
+    protected abstract fun onFetchFailed(envelope: Envelope?)
 }

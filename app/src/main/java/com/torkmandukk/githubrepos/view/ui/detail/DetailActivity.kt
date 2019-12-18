@@ -28,7 +28,6 @@ import kotlinx.android.synthetic.main.layout_detail_header.*
 import kotlinx.android.synthetic.main.toolbar_default.view.*
 import org.jetbrains.anko.toast
 import javax.inject.Inject
-//import javax.inject.InjectViewModelProvider
 
 class DetailActivity : AppCompatActivity() {
 

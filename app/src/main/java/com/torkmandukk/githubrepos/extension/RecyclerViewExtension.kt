@@ -6,9 +6,9 @@ import com.torkmandukk.githubrepos.models.Status
 import org.jetbrains.anko.toast
 
 fun RecyclerView.bindResource(resource: Resource<Any>, onSuccess: () -> Unit) {
-  when (resource.status) {
-    Status.LOADING -> Unit
-    Status.SUCCESS -> onSuccess()
-    Status.ERROR -> this.context.toast(resource.message.toString())
-  }
+    when (resource.status) {
+        Status.LOADING -> Unit
+        Status.SUCCESS -> onSuccess()
+        Status.ERROR -> this.context.toast(resource.message.toString())
+    }
 }
