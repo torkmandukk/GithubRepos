@@ -11,7 +11,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class FollowersDaoTest : DBTest() {
+class ReposDaoTest : DBTest() {
 
     private lateinit var mockRepoList: MutableList<Repo>
     private lateinit var repo: Repo

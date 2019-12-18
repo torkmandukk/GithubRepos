@@ -17,8 +17,8 @@ A simple application around the Github API.
 ## Specification
 
 The application consists of 3 parts:
-- The user details screen should display user avatar, name, and company
-- User repos screen should display a list of user repositories alongside with a number of open issues for each repo
+- The user details screen displays user avatar, name, and company
+- User repos screen displays a list of user repositories alongside with a number of open issues for each repo
 - Commit details for each repo
 
 ## API
