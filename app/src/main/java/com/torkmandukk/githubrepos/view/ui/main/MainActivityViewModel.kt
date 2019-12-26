@@ -60,10 +60,6 @@ constructor(
         this.page.value = page
     }
 
-    fun getPreferenceMenuPosition() = githubUserRepository.getPreferenceMenuPosition()
-
-    fun putPreferenceMenuPosition(position: Int) = githubUserRepository.putPreferenceMenuPosition(position)
-
     fun getUserName() = githubUserRepository.getUserName()
 
     fun getUserKeyName() = githubUserRepository.getUserKeyName()

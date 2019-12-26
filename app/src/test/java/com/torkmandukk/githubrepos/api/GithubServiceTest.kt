@@ -68,19 +68,29 @@ class GithubServiceTest {
     }
 
     @Test
-    fun getReposTest() {//TODO
+    fun getReposTest() {
         enqueueResponse("repos-octocat.json")
-        val repos = LiveDataTestUtil.getValue(service.fetchRepos("git-consortium", 0)).body
+        val repos = LiveDataTestUtil.getValue(service.fetchRepos("octocat", 0)).body
 
         val request: RecordedRequest = mockWebServer.takeRequest()
-        assertThat(request.path, `is`("/users/octocat/repos?page=1"))
+        assertThat(request.path, `is`("/users/octocat/repos?page=0"))
 
         assertThat(repos, notNullValue())
+        assertThat(repos?.size, `is`(8))
+        assertThat(repos?.get(0)?.name, `is`("boysenberry-repo-1"))
     }
 
     @Test
-    fun getCommitsTest() {//TODO
+    fun getCommitsTest() {
         enqueueResponse("commits-git-consortium.json")
+        val commits = LiveDataTestUtil.getValue(service.fetchCommits("octocat", "git-consortium", 0)).body
+
+        val request: RecordedRequest = mockWebServer.takeRequest()
+        assertThat(request.path, `is`("/repos/octocat/git-consortium/commits?page=0"))
+
+        assertThat(commits, notNullValue())
+        assertThat(commits?.size, `is`(6))
+        assertThat(commits?.get(0)?.commit?.author?.name, `is`("The Octocat"))
     }
 
     @Throws(IOException::class)

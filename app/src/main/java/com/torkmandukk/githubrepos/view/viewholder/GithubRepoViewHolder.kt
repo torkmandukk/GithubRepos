@@ -34,7 +34,7 @@ class GithubRepoViewHolder(
     }
 
     override fun onClick(view: View) {
-        delegate.onItemClick(githubRepo, itemView)
+        if (this::githubRepo.isInitialized) delegate.onItemClick(githubRepo, itemView)
     }
 
     override fun onLongClick(view: View) = false

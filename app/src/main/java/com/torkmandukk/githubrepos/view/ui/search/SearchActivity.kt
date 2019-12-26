@@ -31,90 +31,90 @@ import org.jetbrains.anko.toast
 import javax.inject.Inject
 
 class SearchActivity : AppCompatActivity(),
-  TextView.OnEditorActionListener,
-  HistoryViewHolder.Delegate {
+        TextView.OnEditorActionListener,
+        HistoryViewHolder.Delegate {
 
-  @Inject
-  lateinit var viewModelFactory: AppViewModelFactory
-  private val viewModel by lazy { vm(viewModelFactory, SearchActivityViewModel::class) }
-  private lateinit var binding: ActivitySearchBinding
+    @Inject
+    lateinit var viewModelFactory: AppViewModelFactory
+    private val viewModel by lazy { vm(viewModelFactory, SearchActivityViewModel::class) }
+    private lateinit var binding: ActivitySearchBinding
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    AndroidInjection.inject(this)
-    super.onCreate(savedInstanceState)
-    binding = DataBindingUtil.setContentView(this, R.layout.activity_search)
-    binding.viewModel = viewModel
-    binding.lifecycleOwner = this
+    override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
+        super.onCreate(savedInstanceState)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_search)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
 
-    initializeUI()
-    startCircularRevealed(savedInstanceState)
-    observeLiveData(viewModel.githubUserLiveData) { onChangeUser(it) }
-  }
-
-  private fun startCircularRevealed(savedInstanceState: Bundle?) {
-    if (savedInstanceState == null && checkIsMaterialVersion()) {
-      search_layout.inVisible()
-
-      val viewTreeObserver = search_layout.viewTreeObserver
-      if (viewTreeObserver.isAlive) {
-        viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-          override fun onGlobalLayout() {
-            circularRevealed(search_layout, search_layout.width, 0)
-            search_layout.viewTreeObserver.removeOnGlobalLayoutListener(this)
-          }
-        })
-      }
+        initializeUI()
+        startCircularRevealed(savedInstanceState)
+        observeLiveData(viewModel.githubUserLiveData) { onChangeUser(it) }
     }
-  }
 
-  private fun initializeUI() {
-    search_recyclerView.layoutManager = LinearLayoutManager(this)
-    search_recyclerView.adapter = HistoryAdapter(this)
-    toolbar_search_home.setOnClickListener { onBackPressed() }
-    toolbar_search_input.setOnEditorActionListener(this)
-  }
+    private fun startCircularRevealed(savedInstanceState: Bundle?) {
+        if (savedInstanceState == null && checkIsMaterialVersion()) {
+            search_layout.inVisible()
 
-  override fun onEditorAction(p0: TextView?, actionId: Int, event: KeyEvent?): Boolean {
-    val searchKeyword = toolbar_search_input.text
-    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-      searchKeyword?.let {
-        viewModel.login.postValue(it.toString())
-        return true
-      }
+            val viewTreeObserver = search_layout.viewTreeObserver
+            if (viewTreeObserver.isAlive) {
+                viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                    override fun onGlobalLayout() {
+                        circularRevealed(search_layout, search_layout.width, 0)
+                        search_layout.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    }
+                })
+            }
+        }
     }
-    return false
-  }
 
-  override fun onItemClicked(history: History) {
-    onSetResult(history.search)
-  }
-
-  override fun onDeleteHistory(history: History) {
-    viewModel.deleteHistory(history)
-  }
-
-  private fun onChangeUser(resource: Resource<GithubUser>) {
-    when (resource.status) {
-      Status.SUCCESS -> onSetResult(resource.data?.login!!)
-      Status.ERROR -> toast(resource.message.toString())
-      Status.LOADING -> Unit
+    private fun initializeUI() {
+        search_recyclerView.layoutManager = LinearLayoutManager(this)
+        search_recyclerView.adapter = HistoryAdapter(this)
+        toolbar_search_home.setOnClickListener { onBackPressed() }
+        toolbar_search_input.setOnEditorActionListener(this)
     }
-  }
 
-  private fun onSetResult(user: String) {
-    viewModel.insertHistory(user)
-    setResult(intent_requestCode, Intent().putExtra(viewModel.getPreferenceUserKeyName(), user))
-    onBackPressed()
-  }
-
-  override fun onBackPressed() {
-    when (checkIsMaterialVersion()) {
-      true -> circularUnRevealed(search_layout, search_layout.width, 0)
-      false -> super.onBackPressed()
+    override fun onEditorAction(p0: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+        val searchKeyword = toolbar_search_input.text
+        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+            searchKeyword?.let {
+                viewModel.login.postValue(it.toString())
+                return true
+            }
+        }
+        return false
     }
-  }
 
-  companion object {
-    const val intent_requestCode = 1001
-  }
+    override fun onItemClicked(history: History) {
+        onSetResult(history.search)
+    }
+
+    override fun onDeleteHistory(history: History) {
+        viewModel.deleteHistory(history)
+    }
+
+    private fun onChangeUser(resource: Resource<GithubUser>) {
+        when (resource.status) {
+            Status.SUCCESS -> onSetResult(resource.data?.login!!)
+            Status.ERROR -> toast(resource.message.toString())
+            Status.LOADING -> Unit
+        }
+    }
+
+    private fun onSetResult(user: String) {
+        viewModel.insertHistory(user)
+        setResult(intent_requestCode, Intent().putExtra(viewModel.getPreferenceUserKeyName(), user))
+        onBackPressed()
+    }
+
+    override fun onBackPressed() {
+        when (checkIsMaterialVersion()) {
+            true -> circularUnRevealed(search_layout, search_layout.width, 0)
+            false -> super.onBackPressed()
+        }
+    }
+
+    companion object {
+        const val intent_requestCode = 1001
+    }
 }

@@ -18,13 +18,18 @@ class MockTestUtil {
                     null, null, null, null, null, false, null, 0, 0, 0,
                     0, "", "")
         }
-        //TODO
+
         fun mockRepo(): Repo {
             return Repo()
         }
 
-//        fun mockCommit(): CommitInfo {
-//            return CommitInfo()
-//        }
+        fun mockCommit(): GitCommit {
+            val parents = mutableListOf<Parent>()
+            val author = Author("", "", "")
+            val tree = Tree("", "")
+            val verification = Verification(false, "", "", "")
+            val commitInfo = CommitInfo(author, author, "", tree, "", 0, verification)
+            return GitCommit("", "", commitInfo, "", "", "", parents, "", "", 0)
+        }
     }
 }
